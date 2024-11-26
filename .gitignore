@@ -1,0 +1,27 @@
+# IntelliJ IDEA specific files
+.idea/
+*.iml
+*.iws
+
+# Maven specific files
+target/
+release.properties
+
+# Logs
+*.log
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Java specific files
+*.class
+*.jar
+*.war
+*.ear
+
+# MySQL specific files
+*.sql
+
+# Other
+*.swp
