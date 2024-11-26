@@ -22,6 +22,12 @@ public class FareCalculatorService {
         // Arrondi le résultat pour avoir des montants de facturation plus précis
         double durationRounded = new BigDecimal(duration).setScale(2, RoundingMode.HALF_UP).doubleValue();
 
+        // Les 30 premières minutes sont gratuites
+        if (durationRounded <= 0.5){
+            ticket.setPrice(0.00);
+            return;
+        }
+
         switch (ticket.getParkingSpot().getParkingType()){
             case CAR: {
                 ticket.setPrice(durationRounded * Fare.CAR_RATE_PER_HOUR);
