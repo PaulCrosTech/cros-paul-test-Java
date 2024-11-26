@@ -165,4 +165,42 @@ public class FareCalculatorServiceTest {
         // THEN
         assertEquals(0, ticket.getPrice() );
     }
+
+    @Test
+    public void calculateFareCarWithDiscountDescription()
+    {
+        // GIVEN
+        Date inTime = new Date();
+        inTime.setTime( System.currentTimeMillis() - (  60 * 60 * 1000) ); // 60 minutes
+        Date outTime = new Date();
+        ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.CAR,false);
+
+        // WHEN
+        ticket.setInTime(inTime);
+        ticket.setOutTime(outTime);
+        ticket.setParkingSpot(parkingSpot);
+        fareCalculatorService.calculateFare(ticket,true);
+
+        // THEN
+        assertEquals(1.43, ticket.getPrice() ); // 95% du tarif normal
+    }
+
+    @Test
+    public void calculateFareBikeWithDiscountDescription()
+    {
+        // GIVEN
+        Date inTime = new Date();
+        inTime.setTime( System.currentTimeMillis() - (  60 * 60 * 1000) ); // 60 minutes
+        Date outTime = new Date();
+        ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.BIKE,false);
+
+        // WHEN
+        ticket.setInTime(inTime);
+        ticket.setOutTime(outTime);
+        ticket.setParkingSpot(parkingSpot);
+        fareCalculatorService.calculateFare(ticket,true);
+
+        // THEN
+        assertEquals(0.95, ticket.getPrice() ); // 95% du tarif normal
+    }
 }
