@@ -182,7 +182,7 @@ public class FareCalculatorServiceTest {
         fareCalculatorService.calculateFare(ticket,true);
 
         // THEN
-        assertEquals(1.43, ticket.getPrice() ); // 95% du tarif normal
+        assertEquals((0.95 * Fare.CAR_RATE_PER_HOUR), ticket.getPrice() ); // 95% du tarif normal
     }
 
     @Test
@@ -201,6 +201,6 @@ public class FareCalculatorServiceTest {
         fareCalculatorService.calculateFare(ticket,true);
 
         // THEN
-        assertEquals(0.95, ticket.getPrice() ); // 95% du tarif normal
+        assertEquals((0.95 * Fare.BIKE_RATE_PER_HOUR), ticket.getPrice() ); // 95% du tarif normal
     }
 }
