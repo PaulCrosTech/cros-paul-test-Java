@@ -35,14 +35,14 @@ This code uses the default root account to connect and the password can be set a
 
 ### Running App
 
-Post installation of MySQL, Java and Maven, you will have to set up the tables and data in the data base.
+Post installation of MySQL, Java and Maven, you will have to set up the tables and data in the database.
 For this, please run the sql commands present in the `Data.sql` file under the `resources` folder in the code base.
 
 Finally, you will be ready to import the code into an IDE of your choice and run the App.java to launch the application.
 
 ### Testing
 
-The app has unit tests and integration tests written. More of these need to be added and in some places that can be seen mentioend as `TODO` comments. The existing tests need to be triggered from maven-surefire plugin while we try to generate the final executable jar file.
+The app has unit tests and integration tests written. More of these need to be added and in some places that can be seen mentioned as `TODO` comments. The existing tests need to be triggered from maven-surefire plugin while we try to generate the final executable jar file.
 
 To run the tests from maven, go to the folder that contains the pom.xml file and execute the below command.
 
