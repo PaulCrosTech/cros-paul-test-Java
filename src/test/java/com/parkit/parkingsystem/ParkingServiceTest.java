@@ -181,4 +181,21 @@ public class ParkingServiceTest {
         assertNull(parkingSpot);
 
     }
+
+    @Test
+    public void testGetNextParkingNumberIfAvailableParkingNumberWrongArgument() {
+        // GIVEN
+        // Mock input reader, renvoie "3" pour un type de véhicule incorrect
+        when(inputReaderUtil.readSelection()).thenReturn(3);
+
+        // WHEN
+        ParkingSpot parkingSpot = parkingService.getNextParkingNumberIfAvailable();
+
+        // THEN
+        // vérifie que la méthode getNextAvailableSlot n'a pas été appelée
+        verify(parkingSpotDAO, Mockito.times(0)).getNextAvailableSlot(any(ParkingType.class));
+        // vérifie que le parkingSpot est null
+        assertNull(parkingSpot);
+
+    }
 }
