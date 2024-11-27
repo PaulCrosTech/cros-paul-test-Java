@@ -143,6 +143,37 @@ public class ParkingServiceTest {
         verify(ticketDAO, Mockito.times(1)).getNbTicket(anyString());
     }
 
+
+    @Test
+    public void processIncomingVehicleForRegularClientTest() {
+        // GIVEN
+        // Mock input reader, renvoie "ABCDEF" pour le numéro d'immatriculation
+        try {
+            when(inputReaderUtil.readVehicleRegistrationNumber()).thenReturn("ABCDEF");
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to set up test mock objects");
+        }
+        // Mock la méthode getNbTicket
+        when(ticketDAO.getNbTicket(anyString())).thenReturn(1);
+        // Mock input reader, renvoie "1" pour le type de véhicule CAR
+        when(inputReaderUtil.readSelection()).thenReturn(1);
+        // Mock input reader, renvoie "1" pour le numéro du parking disponible
+        when(parkingSpotDAO.getNextAvailableSlot(any(ParkingType.class))).thenReturn(1);
+
+        // WHEN
+        parkingService.processIncomingVehicle();
+
+        // THEN
+        // vérifie que la méthode getNextAvailableSlot a été appelée une fois
+        verify(parkingSpotDAO, Mockito.times(1)).getNextAvailableSlot(any(ParkingType.class));
+        // vérifie que la méthode updateParking a été appelée une fois
+        verify(parkingSpotDAO, Mockito.times(1)).updateParking(any(ParkingSpot.class));
+        // vérifie que la méthode saveTicket a été appelée une fois
+        verify(ticketDAO, Mockito.times(1)).saveTicket(any(Ticket.class));
+        // vérifie que la méthode getNbTicket a été appelée une fois
+        verify(ticketDAO, Mockito.times(1)).getNbTicket(anyString());
+    }
+    
     @Test
     public void testGetNextParkingNumberIfAvailable() {
         // GIVEN
@@ -198,4 +229,6 @@ public class ParkingServiceTest {
         assertNull(parkingSpot);
 
     }
+
+
 }
