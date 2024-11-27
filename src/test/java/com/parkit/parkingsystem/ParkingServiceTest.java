@@ -40,8 +40,7 @@ public class ParkingServiceTest {
 
             // Mock la méthode getNbTicket
             when(ticketDAO.getNbTicket(anyString())).thenReturn(0);
-            // Mock la méthode updateParking (maj disponibilité, la place devient libre)
-            when(parkingSpotDAO.updateParking(any(ParkingSpot.class))).thenReturn(true);
+
 
             // Crée le service de parking avec les mocks
             parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
@@ -66,6 +65,8 @@ public class ParkingServiceTest {
         when(ticketDAO.getTicket(anyString())).thenReturn(ticket);
         // Mock la méthode updateTicket (maj prix et date de sortie)
         when(ticketDAO.updateTicket(any(Ticket.class))).thenReturn(true);
+        // Mock la méthode updateParking (maj disponibilité, la place devient libre)
+        when(parkingSpotDAO.updateParking(any(ParkingSpot.class))).thenReturn(true);
         // WHEN
         parkingService.processExitingVehicle();
 
@@ -78,6 +79,36 @@ public class ParkingServiceTest {
         verify(ticketDAO, Mockito.times(1)).updateTicket(any(Ticket.class));
         // vérifie que la méthode updateParking a été appelée une fois
         verify(parkingSpotDAO, Mockito.times(1)).updateParking(any(ParkingSpot.class));
+    }
+    
+    @Test
+    public void processExitingVehicleTestUnableUpdate()
+    {
+        // GIVEN
+        // Création d'un ParkingSpot
+        ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.CAR,false);
+        // Création d'un Ticket
+        Ticket ticket = new Ticket();
+        ticket.setInTime(new Date(System.currentTimeMillis() - (60*60*1000)));
+        ticket.setParkingSpot(parkingSpot);
+        ticket.setVehicleRegNumber("ABCDEF");
+        // Mock la méthode getTicket
+        when(ticketDAO.getTicket(anyString())).thenReturn(ticket);
+
+        // Mock la méthode updateTicket (maj prix et date de sortie)
+        when(ticketDAO.updateTicket(any(Ticket.class))).thenReturn(false);
+        // WHEN
+        parkingService.processExitingVehicle();
+
+        // THEN
+        // vérifie que la méthode getTicket a été appelée une fois
+        verify(ticketDAO, Mockito.times(1)).getTicket(anyString());
+        // vérifie que la méthode getNbTicket a été appelée une fois
+        verify(ticketDAO, Mockito.times(1)).getNbTicket(anyString());
+        // vérifie que la méthode updateTicket a été appelée une fois
+        verify(ticketDAO, Mockito.times(1)).updateTicket(any(Ticket.class));
+        // vérifie que la méthode updateParking n'a pas été appelée
+        verify(parkingSpotDAO, Mockito.times(0)).updateParking(any(ParkingSpot.class));
     }
 
     @Test
@@ -101,5 +132,7 @@ public class ParkingServiceTest {
         // vérifie que la méthode getNbTicket a été appelée une fois
         verify(ticketDAO, Mockito.times(1)).getNbTicket(anyString());
     }
+
+
 
 }
