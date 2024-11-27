@@ -5,7 +5,6 @@ import com.parkit.parkingsystem.dao.ParkingSpotDAO;
 import com.parkit.parkingsystem.dao.TicketDAO;
 import com.parkit.parkingsystem.model.ParkingSpot;
 import com.parkit.parkingsystem.model.Ticket;
-import com.parkit.parkingsystem.service.FareCalculatorService;
 import com.parkit.parkingsystem.service.ParkingService;
 import com.parkit.parkingsystem.util.InputReaderUtil;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,8 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Date;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -157,8 +155,30 @@ public class ParkingServiceTest {
         ParkingSpot parkingSpot = parkingService.getNextParkingNumberIfAvailable();
 
         // THEN
+        // vérifie que la méthode getNextAvailableSlot a été appelée une fois
+        verify(parkingSpotDAO, Mockito.times(1)).getNextAvailableSlot(any(ParkingType.class));
         assertEquals(1, parkingSpot.getId());
         assertTrue(parkingSpot.isAvailable());
         assertEquals(ParkingType.CAR, parkingSpot.getParkingType());
+    }
+
+    @Test
+    public void testGetNextParkingNumberIfAvailableParkingNumberNotFound() {
+
+        // GIVEN
+        // Mock input reader, renvoie "1" pour le type de véhicule CAR
+        when(inputReaderUtil.readSelection()).thenReturn(1);
+        // Mock la méthode getNextAvailableSlot
+        when(parkingSpotDAO.getNextAvailableSlot(any(ParkingType.class))).thenReturn(0);
+
+        // WHEN
+        ParkingSpot parkingSpot = parkingService.getNextParkingNumberIfAvailable();
+
+        // THEN
+        // vérifie que la méthode getNextAvailableSlot a été appelée une fois
+        verify(parkingSpotDAO, Mockito.times(1)).getNextAvailableSlot(any(ParkingType.class));
+        // vérifie que le parkingSpot est null
+        assertNull(parkingSpot);
+
     }
 }
