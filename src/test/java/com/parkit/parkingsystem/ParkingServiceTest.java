@@ -96,7 +96,7 @@ public class ParkingServiceTest {
         ticket.setVehicleRegNumber("ABCDEF");
         // Mock la méthode getTicket
         when(ticketDAO.getTicket(anyString())).thenReturn(ticket);
-        // Mock la méthode updateTicket (maj prix et date de sortie)
+        // Mock la méthode updateTicket (maj impossible)
         when(ticketDAO.updateTicket(any(Ticket.class))).thenReturn(false);
 
         // WHEN
@@ -143,7 +143,6 @@ public class ParkingServiceTest {
         verify(ticketDAO, Mockito.times(1)).getNbTicket(anyString());
     }
 
-
     @Test
     public void processIncomingVehicleForRegularClientTest() {
         // GIVEN
@@ -173,7 +172,7 @@ public class ParkingServiceTest {
         // vérifie que la méthode getNbTicket a été appelée une fois
         verify(ticketDAO, Mockito.times(1)).getNbTicket(anyString());
     }
-    
+
     @Test
     public void testGetNextParkingNumberIfAvailable() {
         // GIVEN
@@ -229,6 +228,5 @@ public class ParkingServiceTest {
         assertNull(parkingSpot);
 
     }
-
-
+    
 }

@@ -12,9 +12,10 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <log4j.version>2.24.2</log4j.version>
-        <jacoco.version>0.8.12</jacoco.version>
-        <maven-assembly-plugin.version>3.1.1</maven-assembly-plugin.version>
+        <log4j.version>2.24.2</log4j.version>  <!-- set the version of log4j -->
+        <jacoco.version>0.8.12</jacoco.version> <!-- set the version of jacoco -->
+        <maven-assembly-plugin.version>3.1.1
+        </maven-assembly-plugin.version> <!-- set the version of maven-assembly-plugin -->
     </properties>
 
     <dependencies>
@@ -31,7 +32,7 @@
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.33</version>
+            <version>8.0.33</version> <!-- set the version of mysql-connector-java -->
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -48,7 +49,7 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-junit-jupiter</artifactId>
-            <version>2.23.4</version>
+            <version>2.23.4</version> <!-- set the version of mockito-junit-jupiter -->
             <scope>test</scope>
         </dependency>
         <dependency>
