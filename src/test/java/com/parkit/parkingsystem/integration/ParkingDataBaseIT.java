@@ -1,9 +1,12 @@
 package com.parkit.parkingsystem.integration;
 
+import com.parkit.parkingsystem.constants.ParkingType;
 import com.parkit.parkingsystem.dao.ParkingSpotDAO;
 import com.parkit.parkingsystem.dao.TicketDAO;
 import com.parkit.parkingsystem.integration.config.DataBaseTestConfig;
 import com.parkit.parkingsystem.integration.service.DataBasePrepareService;
+import com.parkit.parkingsystem.model.ParkingSpot;
+import com.parkit.parkingsystem.model.Ticket;
 import com.parkit.parkingsystem.service.ParkingService;
 import com.parkit.parkingsystem.util.InputReaderUtil;
 import org.junit.jupiter.api.*;
@@ -11,6 +14,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -60,7 +64,20 @@ public class ParkingDataBaseIT {
         parkingService.processIncomingVehicle();
 
         // THEN
-        //TODO: check that a ticket is actually saved in DB and Parking table is updated with availability
+
+        // Vérification de Ticket :
+        // Récupère le Ticket en fonction de son numéro de plaque d'immatriculation
+        Ticket ticket = ticketDAO.getTicket("ABCDEF");
+        // Vérifie que le Ticket a été trouvé en BD : la BD étant vierge, il n'y a qu'un seul ticket
+        assertNotNull(ticket);
+
+        // Vérification de ParkingSpot :
+        // Récupère ParkingSpot en fonction de son ID
+        ParkingSpot parkingSpot = parkingSpotDAO.getParkingSpotById(ticket.getParkingSpot().getId());
+        // Vérifie que la place a été trouvée
+        assertNotNull(parkingSpot);
+        // Vérifie que la place n'est plus disponible
+        assertFalse(parkingSpot.isAvailable());
 
     }
 
