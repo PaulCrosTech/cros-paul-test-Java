@@ -17,6 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Date;
 
+import static java.lang.Thread.sleep;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
@@ -121,14 +122,15 @@ public class ParkingDataBaseIT {
     }
 
     @Test
-    public void testParkingLotExitRecurringUser() {
+    public void testParkingLotExitRecurringUser() throws InterruptedException {
 
         //GIVEN
-        when(inputReaderUtil.readSelection()).thenReturn(1);
+        when(inputReaderUtil.readSelection()).thenReturn(1); // Choix du type de véhicule : CAR
         ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
 
         // Réalise l'entrée/sortie d'un véhicule pour la première fois
         parkingService.processIncomingVehicle();
+//        sleep(1000);
         parkingService.processExitingVehicle();
 
         // Réalise l'entrée du même véhicule pour la deuxième fois
@@ -142,13 +144,14 @@ public class ParkingDataBaseIT {
         ticketDAO.saveTicket(ticket);
 
         //--- WHEN
+//        sleep(1000);
         parkingService.processExitingVehicle();
 
         //--- THEN
         Ticket updatedTicket = ticketDAO.getTicket("ABCDEF");
         assertNotNull(updatedTicket);
         assertNotNull(updatedTicket.getOutTime());
-        assertEquals((0.95 * Fare.CAR_RATE_PER_HOUR), updatedTicket.getPrice()); // Vérifie la remise de 5%
+        assertEquals(Math.round(Fare.CAR_RATE_PER_HOUR * 0.95), updatedTicket.getPrice());
 
 
     }

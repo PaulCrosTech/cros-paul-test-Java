@@ -33,12 +33,10 @@ public class ParkingService {
             if (parkingSpot != null && parkingSpot.getId() > 0) {
                 String vehicleRegNumber = getVehichleRegNumber();
                 parkingSpot.setAvailable(false);
-                parkingSpotDAO.updateParking(parkingSpot);//allow this parking space and mark it's availability as false
+                parkingSpotDAO.updateParking(parkingSpot);
 
                 Date inTime = new Date();
                 Ticket ticket = new Ticket();
-                //ID, PARKING_NUMBER, VEHICLE_REG_NUMBER, PRICE, IN_TIME, OUT_TIME)
-                //ticket.setId(ticketID);
                 ticket.setParkingSpot(parkingSpot);
                 ticket.setVehicleRegNumber(vehicleRegNumber);
                 ticket.setPrice(0);
@@ -120,8 +118,8 @@ public class ParkingService {
                 ParkingSpot parkingSpot = ticket.getParkingSpot();
                 parkingSpot.setAvailable(true);
                 parkingSpotDAO.updateParking(parkingSpot);
-                System.out.println("Please pay the parking fare:" + ticket.getPrice());
-                System.out.println("Recorded out-time for vehicle number:" + ticket.getVehicleRegNumber() + " is:" + outTime);
+                System.out.println("Please pay the parking fare : " + (ticket.getPrice() / 100) + "€");
+                System.out.println("Recorded out-time for vehicle number : " + ticket.getVehicleRegNumber() + " is : " + outTime);
             } else {
                 System.out.println("Unable to update ticket information. Error occurred");
             }

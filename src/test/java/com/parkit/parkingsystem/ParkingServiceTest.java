@@ -209,7 +209,6 @@ public class ParkingServiceTest {
         verify(parkingSpotDAO, Mockito.times(1)).getNextAvailableSlot(any(ParkingType.class));
         // vérifie que le parkingSpot est null
         assertNull(parkingSpot);
-
     }
 
     @Test
@@ -228,5 +227,5 @@ public class ParkingServiceTest {
         assertNull(parkingSpot);
 
     }
-    
+
 }
