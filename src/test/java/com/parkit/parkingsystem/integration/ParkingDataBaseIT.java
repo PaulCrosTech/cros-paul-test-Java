@@ -101,13 +101,15 @@ public class ParkingDataBaseIT {
         ticket.setInTime(new Date(System.currentTimeMillis() - (60 * 60 * 1000)));
         ticket.setParkingSpot(parkingSpot);
         ticket.setVehicleRegNumber("ABCDEF");
-        ticketDAO.saveTicket(ticket);
+        boolean isTicketSaved = ticketDAO.saveTicket(ticket);
 
         // WHEN
         parkingService.processExitingVehicle();
 
         // THEN
         // Vérification de Ticket :
+        assertTrue(isTicketSaved, "Ticket not saved in DB");
+
         // Price & Time (not null)
         Ticket ticketInDB = ticketDAO.getTicket("ABCDEF");
         assertNotNull(ticketInDB);
@@ -130,7 +132,7 @@ public class ParkingDataBaseIT {
 
         // Réalise l'entrée/sortie d'un véhicule pour la première fois
         parkingService.processIncomingVehicle();
-//        sleep(1000);
+        sleep(1000);
         parkingService.processExitingVehicle();
 
         // Réalise l'entrée du même véhicule pour la deuxième fois
@@ -141,13 +143,14 @@ public class ParkingDataBaseIT {
         ticket.setInTime(new Date(System.currentTimeMillis() - (60 * 60 * 1000)));
         ticket.setParkingSpot(parkingSpot);
         ticket.setVehicleRegNumber("ABCDEF");
-        ticketDAO.saveTicket(ticket);
+        boolean isTicketSaved = ticketDAO.saveTicket(ticket);
 
         //--- WHEN
-//        sleep(1000);
+        sleep(1000);
         parkingService.processExitingVehicle();
 
         //--- THEN
+        assertTrue(isTicketSaved, "Ticket not saved in DB");
         Ticket updatedTicket = ticketDAO.getTicket("ABCDEF");
         assertNotNull(updatedTicket);
         assertNotNull(updatedTicket.getOutTime());

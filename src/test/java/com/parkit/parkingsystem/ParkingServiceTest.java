@@ -124,6 +124,8 @@ public class ParkingServiceTest {
         }
         // Mock la méthode getNbTicket
         when(ticketDAO.getNbTicket(anyString())).thenReturn(0);
+        // Mock la méthode saveTicket
+        when(ticketDAO.saveTicket(any(Ticket.class))).thenReturn(true);
         // Mock input reader, renvoie "1" pour le type de véhicule CAR
         when(inputReaderUtil.readSelection()).thenReturn(1);
         // Mock input reader, renvoie "1" pour le numéro du parking disponible
@@ -154,6 +156,8 @@ public class ParkingServiceTest {
         }
         // Mock la méthode getNbTicket
         when(ticketDAO.getNbTicket(anyString())).thenReturn(1);
+        // Mock la méthode saveTicket
+        when(ticketDAO.saveTicket(any(Ticket.class))).thenReturn(true);
         // Mock input reader, renvoie "1" pour le type de véhicule CAR
         when(inputReaderUtil.readSelection()).thenReturn(1);
         // Mock input reader, renvoie "1" pour le numéro du parking disponible
