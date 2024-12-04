@@ -24,6 +24,7 @@ public class FareCalculatorService {
         // Calcul de la durée précise (en nombre décimal)
         double duration = (outHour - inHour) / 1000 / 60 / 60;
 
+
         // Arrondi le résultat à deux chiffres après la virgule
         double durationRounded = new BigDecimal(duration).setScale(2, RoundingMode.HALF_UP).doubleValue();
 
