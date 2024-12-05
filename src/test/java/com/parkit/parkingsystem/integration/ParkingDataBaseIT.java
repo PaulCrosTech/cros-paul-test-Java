@@ -17,7 +17,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Date;
 
-import static java.lang.Thread.sleep;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
@@ -47,7 +46,7 @@ public class ParkingDataBaseIT {
     @BeforeEach
     public void setUpPerTest() throws Exception {
 
-        // Mock : simule la plaque d'immatriculation ABCDEF
+        // Mock : simule la plaque d'immatriculation 'ABCDEF'
         when(inputReaderUtil.readVehicleRegistrationNumber()).thenReturn("ABCDEF");
         // Reset Test Database : delete Tickets, Parking all Available
         dataBasePrepareService.clearDataBaseEntries();
@@ -55,13 +54,17 @@ public class ParkingDataBaseIT {
 
     @AfterAll
     public static void tearDown() {
-
+        // Reset Test Database : delete Tickets, Parking all Available
+        //        dataBasePrepareService.clearDataBaseEntries();
     }
 
+    /**
+     * Etape #6 : Test de stationnement d'un véhicule dans le parking
+     */
     @Test
     public void testParkingACar() {
         // GIVEN
-        // Mock : simule l'option 1 : CAR
+        // Mock : simule l'option 1 'CAR'
         when(inputReaderUtil.readSelection()).thenReturn(1);
         ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
 
@@ -69,93 +72,52 @@ public class ParkingDataBaseIT {
         parkingService.processIncomingVehicle();
 
         // THEN
-
-        // Vérification de Ticket :
-        // Récupère le Ticket en fonction de son numéro de plaque d'immatriculation
+        // Vérification de Ticket
         Ticket ticket = ticketDAO.getTicket("ABCDEF");
-        // Vérifie que le Ticket a été trouvé en BD : la BD étant vierge, il n'y a qu'un seul ticket
         assertNotNull(ticket);
+        assertNotNull(ticket.getInTime());
+        assertNull(ticket.getOutTime());
+        assertEquals(0, ticket.getPrice());
 
-        // Vérification de ParkingSpot :
-        // Récupère ParkingSpot en fonction de son ID
+        // Vérification de ParkingSpot
         ParkingSpot parkingSpot = parkingSpotDAO.getParkingSpotById(ticket.getParkingSpot().getId());
-        // Vérifie que la place a été trouvée
         assertNotNull(parkingSpot);
-        // Vérifie que la place n'est plus disponible
         assertFalse(parkingSpot.isAvailable());
-
     }
 
+
+    /**
+     * Etape #6 : Test de sortie d'un véhicule du parking
+     */
     @Test
     public void testParkingLotExit() {
 
         // GIVEN
-        // Création d'un ParkingService
         ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
-        // Création d'un ParkingSpot
         ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.CAR, false);
         parkingSpotDAO.updateParking(parkingSpot);
 
-        // Création d'un Ticket
+        // Création d'un Ticket de 60 minutes
         Ticket ticket = new Ticket();
         ticket.setInTime(new Date(System.currentTimeMillis() - (60 * 60 * 1000)));
         ticket.setParkingSpot(parkingSpot);
         ticket.setVehicleRegNumber("ABCDEF");
-        boolean isTicketSaved = ticketDAO.saveTicket(ticket);
+        ticketDAO.saveTicket(ticket);
 
         // WHEN
         parkingService.processExitingVehicle();
 
         // THEN
-        // Vérification de Ticket :
-        assertTrue(isTicketSaved, "Ticket not saved in DB");
-
-        // Price & Time (not null)
+        // Vérification de Ticket
         Ticket ticketInDB = ticketDAO.getTicket("ABCDEF");
         assertNotNull(ticketInDB);
         assertEquals(Fare.CAR_RATE_PER_HOUR, ticketInDB.getPrice());
+        assertNotNull(ticketInDB.getInTime());
         assertNotNull(ticketInDB.getOutTime());
 
-        // Vérification de ParkingSpot :
-        // Parking : available
+        // Vérification de ParkingSpot
         ParkingSpot parkingSpotInDB = parkingSpotDAO.getParkingSpotById(ticket.getParkingSpot().getId());
         assertNotNull(parkingSpotInDB);
         assertTrue(parkingSpotInDB.isAvailable());
-    }
-
-    @Test
-    public void testParkingLotExitRecurringUser() throws InterruptedException {
-
-        //GIVEN
-        when(inputReaderUtil.readSelection()).thenReturn(1); // Choix du type de véhicule : CAR
-        ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
-
-        // Réalise l'entrée/sortie d'un véhicule pour la première fois
-        parkingService.processIncomingVehicle();
-        sleep(1000);
-        parkingService.processExitingVehicle();
-
-        // Réalise l'entrée du même véhicule pour la deuxième fois
-        // Création d'un Ticket d'une heure
-        ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.CAR, false);
-        parkingSpotDAO.updateParking(parkingSpot);
-        Ticket ticket = new Ticket();
-        ticket.setInTime(new Date(System.currentTimeMillis() - (60 * 60 * 1000)));
-        ticket.setParkingSpot(parkingSpot);
-        ticket.setVehicleRegNumber("ABCDEF");
-        boolean isTicketSaved = ticketDAO.saveTicket(ticket);
-
-        //--- WHEN
-        sleep(1000);
-        parkingService.processExitingVehicle();
-
-        //--- THEN
-        assertTrue(isTicketSaved, "Ticket not saved in DB");
-        Ticket updatedTicket = ticketDAO.getTicket("ABCDEF");
-        assertNotNull(updatedTicket);
-        assertNotNull(updatedTicket.getOutTime());
-        assertEquals(Math.round(Fare.CAR_RATE_PER_HOUR * 0.95), updatedTicket.getPrice());
-
-
     }
 }

@@ -93,6 +93,9 @@ public class TicketDAO {
         return isUpdated;
     }
 
+    /**
+     * Etape #4 : Renvoi le nombre de Tickets pour un véhicule donné
+     */
     public int getNbTicket(String vehicleRegNumber) {
         Connection con = null;
         int nbTicket = 0;
@@ -109,8 +112,8 @@ public class TicketDAO {
         } catch (Exception ex) {
             logger.error("Error getting number of tickets from DB", ex);
         } finally {
-            dataBaseConfig.closeResultSet(rs);
             dataBaseConfig.closePreparedStatement(ps);
+            dataBaseConfig.closeResultSet(rs);
             dataBaseConfig.closeConnection(con);
         }
         return nbTicket;

@@ -3,25 +3,30 @@ package com.parkit.parkingsystem.service;
 import com.parkit.parkingsystem.constants.Fare;
 import com.parkit.parkingsystem.model.Ticket;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 public class FareCalculatorService {
 
     public void calculateFare(Ticket ticket) {
         calculateFare(ticket, false);
     }
 
+    /**
+     * Etape #4 : Surchage du constructeur, ajout d'un paramètre discount pour appliquer une remise de 5%
+     */
     public void calculateFare(Ticket ticket, boolean discount) {
         if ((ticket.getOutTime() == null) || (ticket.getOutTime().before(ticket.getInTime()))) {
             throw new IllegalArgumentException("Out time provided is incorrect : " + ticket.getOutTime().toString() + " < In time " + ticket.getInTime().toString());
         }
 
-        // Pour corriger le bug de l'étape #1, on utilise l'heure d'entrée et sortie en millisecondes
+        // Etape #1 : Correction du bug de la durée de stationnement, on utilise un calcul en millisecondes
         double inHour = ticket.getInTime().getTime();
         double outHour = ticket.getOutTime().getTime();
-
-        // Calcul de la durée précise (en nombre décimal)
         double duration = (outHour - inHour) / 1000 / 60 / 60;
+        duration = BigDecimal.valueOf(duration).setScale(2, RoundingMode.HALF_UP).doubleValue();
 
-        // Etape #3 : implémentation des 30 premières minutes sont gratuites
+        // Etape #3 : implémentation des '30 minutes gratuites'
         if (duration <= 0.5) {
             duration = 0;
         }
@@ -40,12 +45,12 @@ public class FareCalculatorService {
                 throw new IllegalArgumentException("Unkown Parking Type");
         }
 
-        // Applique la remise de 5% si le client est déjà venu
+        // Etape #4 : Applique la remise de 5%
         if (discount) {
             finalPrice *= 0.95;
         }
-        
-        // Arrondi le résultat au centime supérieur
-        ticket.setPrice(Math.round(finalPrice));
+
+        ticket.setPrice(finalPrice);
+
     }
 }

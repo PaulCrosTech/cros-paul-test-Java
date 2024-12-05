@@ -42,15 +42,12 @@ public class ParkingService {
                 ticket.setPrice(0);
                 ticket.setInTime(inTime);
                 ticket.setOutTime(null);
-                if (!ticketDAO.saveTicket(ticket)) {
-                    parkingSpot.setAvailable(true);
-                    parkingSpotDAO.updateParking(parkingSpot);
-                    throw new Exception("Error occurred while saving ticket");
-                }
+                ticketDAO.saveTicket(ticket);
                 System.out.println("Generated Ticket and saved in DB");
                 System.out.println("Please park your vehicle in spot number:" + parkingSpot.getId());
                 System.out.println("Recorded in-time for vehicle number:" + vehicleRegNumber + " is:" + inTime);
 
+                // Etape #4 : Message de bienvenue pour les clients réguliers
                 int nbTicket = ticketDAO.getNbTicket(vehicleRegNumber);
                 if (nbTicket >= 1) {
                     System.out.println("Heureux de vous revoir ! En tant qu’utilisateur régulier de notre parking, vous allez obtenir une remise de 5%");
@@ -111,18 +108,18 @@ public class ParkingService {
             Date outTime = new Date();
             ticket.setOutTime(outTime);
 
-            // Gestion des clients régluliers
+            // Etape #4 : Vérifie si le client est régulier
             int nbTicket = ticketDAO.getNbTicket(vehicleRegNumber);
             boolean discount = nbTicket >= 1;
 
-            // Calul du prix du ticket
+            // Calcul du prix du ticket
             fareCalculatorService.calculateFare(ticket, discount);
 
             if (ticketDAO.updateTicket(ticket)) {
                 ParkingSpot parkingSpot = ticket.getParkingSpot();
                 parkingSpot.setAvailable(true);
                 parkingSpotDAO.updateParking(parkingSpot);
-                System.out.println("Please pay the parking fare : " + (ticket.getPrice() / 100) + "€");
+                System.out.println("Please pay the parking fare : " + ticket.getPrice());
                 System.out.println("Recorded out-time for vehicle number : " + ticket.getVehicleRegNumber() + " is : " + outTime);
             } else {
                 System.out.println("Unable to update ticket information. Error occurred");
