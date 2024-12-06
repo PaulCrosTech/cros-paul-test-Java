@@ -143,7 +143,6 @@
                 <artifactId>spotbugs-maven-plugin</artifactId>
                 <version>4.8.6.6</version>
                 <dependencies>
-                    <!-- overwrite dependency on spotbugs if you want to specify the version of spotbugs -->
                     <dependency>
                         <groupId>com.github.spotbugs</groupId>
                         <artifactId>spotbugs</artifactId>
@@ -153,4 +152,15 @@
             </plugin>
         </plugins>
     </build>
+
+    <!-- Add Surefire reporting -->
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-report-plugin</artifactId>
+                <version>3.5.2</version>
+            </plugin>
+        </plugins>
+    </reporting>
 </project>
