@@ -120,4 +120,57 @@ public class ParkingDataBaseIT {
         assertNotNull(parkingSpotInDB);
         assertTrue(parkingSpotInDB.isAvailable());
     }
+
+    /**
+     * Etape #6 : Test de sortie d'un véhicule du parking pour un utilisateur récurrent
+     */
+    @Test
+    public void testParkingLotExitRecurringUser() {
+
+        // GIVEN
+        // Création d'un premier Ticket : pour simuler le fait que le client est déjà venu
+        // On laisse la place de parking disponible, pour simuler le fait qu'il a quitté le parking
+        ParkingSpot firstParkingSpot = new ParkingSpot(1, ParkingType.CAR, true);
+        parkingSpotDAO.updateParking(firstParkingSpot);
+        Date inTime = new Date(System.currentTimeMillis() - (24 * 60 * 60 * 1000)); // Date à hier
+        Date outTime = new Date(inTime.getTime() + (30 * 60 * 1000));  // 60 minutes après inTime
+        Ticket firstTicket = new Ticket();
+        firstTicket.setPrice(0);
+        firstTicket.setInTime(inTime);
+        firstTicket.setOutTime(outTime);
+        firstTicket.setParkingSpot(firstParkingSpot);
+        firstTicket.setVehicleRegNumber("ABCDEF");
+        ticketDAO.saveTicket(firstTicket);
+
+        // Création d'un deuxième Ticket : pour simuler le fait que le client est revenu ce jour
+        ParkingSpot secondParkingSpot = new ParkingSpot(1, ParkingType.CAR, false);
+        parkingSpotDAO.updateParking(secondParkingSpot);
+        Ticket secondTicket = new Ticket();
+        secondTicket.setInTime(new Date(System.currentTimeMillis() - (60 * 60 * 1000))); // 60 minutes
+        secondTicket.setParkingSpot(secondParkingSpot);
+        secondTicket.setVehicleRegNumber("ABCDEF");
+        ticketDAO.saveTicket(secondTicket);
+
+        // Création objet ParkingService
+        ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
+
+        // WHEN
+        parkingService.processExitingVehicle();
+
+        // THEN
+        // Vérifie qu'il y a 2 Ticket pour le véhicule 'ABCDEF'
+        assertEquals(2, ticketDAO.getNbTicket("ABCDEF"));
+        // Vérification du second Ticket
+        Ticket ticketInDB = ticketDAO.getTicket("ABCDEF");
+        assertNotNull(ticketInDB);
+        assertNotNull(ticketInDB.getInTime());
+        assertNotNull(ticketInDB.getOutTime());
+        assertEquals((Fare.CAR_RATE_PER_HOUR * 0.95), ticketInDB.getPrice());
+
+        // Vérification de ParkingSpot
+        ParkingSpot parkingSpotInDB = parkingSpotDAO.getParkingSpotById(ticketInDB.getParkingSpot().getId());
+        assertNotNull(parkingSpotInDB);
+        assertTrue(parkingSpotInDB.isAvailable());
+
+    }
 }

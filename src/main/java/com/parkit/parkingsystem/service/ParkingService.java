@@ -49,7 +49,7 @@ public class ParkingService {
 
                 // Etape #4 : Message de bienvenue pour les clients réguliers
                 int nbTicket = ticketDAO.getNbTicket(vehicleRegNumber);
-                if (nbTicket >= 1) {
+                if (nbTicket > 1) {
                     System.out.println("Heureux de vous revoir ! En tant qu’utilisateur régulier de notre parking, vous allez obtenir une remise de 5%");
                 }
             }
@@ -110,7 +110,7 @@ public class ParkingService {
 
             // Etape #4 : Vérifie si le client est régulier
             int nbTicket = ticketDAO.getNbTicket(vehicleRegNumber);
-            boolean discount = nbTicket >= 1;
+            boolean discount = nbTicket > 1;
 
             // Calcul du prix du ticket
             fareCalculatorService.calculateFare(ticket, discount);
