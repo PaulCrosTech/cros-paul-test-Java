@@ -13,14 +13,14 @@ public class FareCalculatorService {
     }
 
     /**
-     * Etape #4 : Surchage du constructeur, ajout d'un paramètre discount pour appliquer une remise de 5%
+     * Etape #4 : Surcharge du constructeur, ajout d'un paramètre discount pour appliquer une remise de 5%
      */
     public void calculateFare(Ticket ticket, boolean discount) {
         if ((ticket.getOutTime() == null) || (ticket.getOutTime().before(ticket.getInTime()))) {
             throw new IllegalArgumentException("Out time provided is incorrect : " + ticket.getOutTime().toString() + " < In time " + ticket.getInTime().toString());
         }
 
-        // Etape #1 : Correction du bug de la durée de stationnement, on utilise un calcul en millisecondes
+        // Etape #2 : Correction du bug de la durée de stationnement, on utilise un calcul en millisecondes
         double inHour = ticket.getInTime().getTime();
         double outHour = ticket.getOutTime().getTime();
         double duration = (outHour - inHour) / 1000 / 60 / 60;
@@ -42,7 +42,7 @@ public class FareCalculatorService {
                 break;
             }
             default:
-                throw new IllegalArgumentException("Unkown Parking Type");
+                throw new IllegalArgumentException("Unknown Parking Type");
         }
 
         // Etape #4 : Applique la remise de 5%

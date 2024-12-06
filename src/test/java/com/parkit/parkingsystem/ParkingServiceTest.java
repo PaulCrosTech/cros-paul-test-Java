@@ -1,5 +1,6 @@
 package com.parkit.parkingsystem;
 
+import com.parkit.parkingsystem.constants.Fare;
 import com.parkit.parkingsystem.constants.ParkingType;
 import com.parkit.parkingsystem.dao.ParkingSpotDAO;
 import com.parkit.parkingsystem.dao.TicketDAO;
@@ -45,16 +46,15 @@ public class ParkingServiceTest {
         // GIVEN
         // Mock input reader, renvoie "ABCDEF" pour le numéro d'immatriculation
         when(inputReaderUtil.readVehicleRegistrationNumber()).thenReturn("ABCDEF");
-        // Mock la méthode getNbTicket
-        when(ticketDAO.getNbTicket(anyString())).thenReturn(0);
-        // Création d'un ParkingSpot
-        ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.CAR, false);
         // Mock la méthode getTicket, renvoi un Ticket de 60minutes
+        ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.CAR, false);
         Ticket ticket = new Ticket();
         ticket.setInTime(new Date(System.currentTimeMillis() - (60 * 60 * 1000)));
         ticket.setParkingSpot(parkingSpot);
         ticket.setVehicleRegNumber("ABCDEF");
         when(ticketDAO.getTicket(anyString())).thenReturn(ticket);
+        // Mock la méthode getNbTicket
+        when(ticketDAO.getNbTicket(anyString())).thenReturn(0);
         // Mock la méthode updateTicket (maj prix et date de sortie)
         when(ticketDAO.updateTicket(any(Ticket.class))).thenReturn(true);
         // Mock la méthode updateParking (maj disponibilité, la place devient libre)
@@ -64,14 +64,11 @@ public class ParkingServiceTest {
         parkingService.processExitingVehicle();
 
         // THEN
-        // vérifie que la méthode getTicket a été appelée une fois
         verify(ticketDAO, Mockito.times(1)).getTicket(anyString());
-        // vérifie que la méthode getNbTicket a été appelée une fois
         verify(ticketDAO, Mockito.times(1)).getNbTicket(anyString());
-        // vérifie que la méthode updateTicket a été appelée une fois
         verify(ticketDAO, Mockito.times(1)).updateTicket(any(Ticket.class));
-        // vérifie que la méthode updateParking a été appelée une fois
         verify(parkingSpotDAO, Mockito.times(1)).updateParking(any(ParkingSpot.class));
+        assertEquals(Fare.CAR_RATE_PER_HOUR, ticket.getPrice());
     }
 
     /**
@@ -82,16 +79,15 @@ public class ParkingServiceTest {
         // GIVEN
         // Mock input reader, renvoie "ABCDEF" pour le numéro d'immatriculation
         when(inputReaderUtil.readVehicleRegistrationNumber()).thenReturn("ABCDEF");
-        // Mock la méthode getNbTicket
-        when(ticketDAO.getNbTicket(anyString())).thenReturn(0);
-        // Création d'un ParkingSpot
-        ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.CAR, false);
         // Mock la méthode getTicket, renvoie un Ticket de 60minutes
+        ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.CAR, false);
         Ticket ticket = new Ticket();
         ticket.setInTime(new Date(System.currentTimeMillis() - (60 * 60 * 1000)));
         ticket.setParkingSpot(parkingSpot);
         ticket.setVehicleRegNumber("ABCDEF");
         when(ticketDAO.getTicket(anyString())).thenReturn(ticket);
+        // Mock la méthode getNbTicket
+        when(ticketDAO.getNbTicket(anyString())).thenReturn(0);
         // Mock la méthode updateTicket (maj impossible)
         when(ticketDAO.updateTicket(any(Ticket.class))).thenReturn(false);
 
@@ -99,13 +95,9 @@ public class ParkingServiceTest {
         parkingService.processExitingVehicle();
 
         // THEN
-        // vérifie que la méthode getTicket a été appelée une fois
         verify(ticketDAO, Mockito.times(1)).getTicket(anyString());
-        // vérifie que la méthode getNbTicket a été appelée une fois
         verify(ticketDAO, Mockito.times(1)).getNbTicket(anyString());
-        // vérifie que la méthode updateTicket a été appelée une fois
         verify(ticketDAO, Mockito.times(1)).updateTicket(any(Ticket.class));
-        // vérifie que la méthode updateParking n'a pas été appelée
         verify(parkingSpotDAO, Mockito.times(0)).updateParking(any(ParkingSpot.class));
     }
 
@@ -132,13 +124,9 @@ public class ParkingServiceTest {
         parkingService.processIncomingVehicle();
 
         // THEN
-        // vérifie que la méthode getNextAvailableSlot a été appelée une fois
         verify(parkingSpotDAO, Mockito.times(1)).getNextAvailableSlot(any(ParkingType.class));
-        // vérifie que la méthode updateParking a été appelée une fois
         verify(parkingSpotDAO, Mockito.times(1)).updateParking(any(ParkingSpot.class));
-        // vérifie que la méthode saveTicket a été appelée une fois
         verify(ticketDAO, Mockito.times(1)).saveTicket(any(Ticket.class));
-        // vérifie que la méthode getNbTicket a été appelée une fois
         verify(ticketDAO, Mockito.times(1)).getNbTicket(anyString());
     }
 
@@ -187,7 +175,6 @@ public class ParkingServiceTest {
         ParkingSpot parkingSpot = parkingService.getNextParkingNumberIfAvailable();
 
         // THEN
-        // vérifie que la méthode getNextAvailableSlot a été appelée une fois
         verify(parkingSpotDAO, Mockito.times(1)).getNextAvailableSlot(any(ParkingType.class));
         assertEquals(1, parkingSpot.getId());
         assertTrue(parkingSpot.isAvailable());
@@ -210,9 +197,7 @@ public class ParkingServiceTest {
         ParkingSpot parkingSpot = parkingService.getNextParkingNumberIfAvailable();
 
         // THEN
-        // vérifie que la méthode getNextAvailableSlot a été appelée une fois
         verify(parkingSpotDAO, Mockito.times(1)).getNextAvailableSlot(any(ParkingType.class));
-        // vérifie que le parkingSpot est null
         assertNull(parkingSpot);
     }
 
@@ -229,9 +214,7 @@ public class ParkingServiceTest {
         ParkingSpot parkingSpot = parkingService.getNextParkingNumberIfAvailable();
 
         // THEN
-        // vérifie que la méthode getNextAvailableSlot n'a pas été appelée
         verify(parkingSpotDAO, Mockito.times(0)).getNextAvailableSlot(any(ParkingType.class));
-        // vérifie que le parkingSpot est null
         assertNull(parkingSpot);
 
     }

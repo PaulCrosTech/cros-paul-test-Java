@@ -27,6 +27,7 @@ public class ParkingDataBaseIT {
     private static ParkingSpotDAO parkingSpotDAO;
     private static TicketDAO ticketDAO;
     private static DataBasePrepareService dataBasePrepareService;
+    private static ParkingService parkingService;
 
     @Mock
     private static InputReaderUtil inputReaderUtil;
@@ -45,9 +46,11 @@ public class ParkingDataBaseIT {
 
     @BeforeEach
     public void setUpPerTest() throws Exception {
-
+        
         // Mock : simule la plaque d'immatriculation 'ABCDEF'
         when(inputReaderUtil.readVehicleRegistrationNumber()).thenReturn("ABCDEF");
+        // Création de l'objet ParkingService
+        parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
         // Reset Test Database : delete Tickets, Parking all Available
         dataBasePrepareService.clearDataBaseEntries();
     }
@@ -66,7 +69,6 @@ public class ParkingDataBaseIT {
         // GIVEN
         // Mock : simule l'option 1 'CAR'
         when(inputReaderUtil.readSelection()).thenReturn(1);
-        ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
 
         // WHEN
         parkingService.processIncomingVehicle();
@@ -93,11 +95,9 @@ public class ParkingDataBaseIT {
     public void testParkingLotExit() {
 
         // GIVEN
-        ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
+        // Création d'un Ticket de 60 minutes
         ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.CAR, false);
         parkingSpotDAO.updateParking(parkingSpot);
-
-        // Création d'un Ticket de 60 minutes
         Ticket ticket = new Ticket();
         ticket.setInTime(new Date(System.currentTimeMillis() - (60 * 60 * 1000)));
         ticket.setParkingSpot(parkingSpot);
@@ -114,6 +114,7 @@ public class ParkingDataBaseIT {
         assertEquals(Fare.CAR_RATE_PER_HOUR, ticketInDB.getPrice());
         assertNotNull(ticketInDB.getInTime());
         assertNotNull(ticketInDB.getOutTime());
+        assertEquals((Fare.CAR_RATE_PER_HOUR), ticketInDB.getPrice());
 
         // Vérification de ParkingSpot
         ParkingSpot parkingSpotInDB = parkingSpotDAO.getParkingSpotById(ticket.getParkingSpot().getId());
@@ -133,7 +134,7 @@ public class ParkingDataBaseIT {
         ParkingSpot firstParkingSpot = new ParkingSpot(1, ParkingType.CAR, true);
         parkingSpotDAO.updateParking(firstParkingSpot);
         Date inTime = new Date(System.currentTimeMillis() - (24 * 60 * 60 * 1000)); // Date à hier
-        Date outTime = new Date(inTime.getTime() + (30 * 60 * 1000));  // 60 minutes après inTime
+        Date outTime = new Date(inTime.getTime() + (30 * 60 * 1000));  // 30 minutes après inTime
         Ticket firstTicket = new Ticket();
         firstTicket.setPrice(0);
         firstTicket.setInTime(inTime);
@@ -150,9 +151,6 @@ public class ParkingDataBaseIT {
         secondTicket.setParkingSpot(secondParkingSpot);
         secondTicket.setVehicleRegNumber("ABCDEF");
         ticketDAO.saveTicket(secondTicket);
-
-        // Création objet ParkingService
-        ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
 
         // WHEN
         parkingService.processExitingVehicle();
