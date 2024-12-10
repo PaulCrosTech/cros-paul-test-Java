@@ -152,11 +152,9 @@ public class ParkingServiceTest {
         parkingService.processIncomingVehicle();
 
         // THEN
-        // vérifie que la méthode getNextAvailableSlot a été appelée une fois
         verify(parkingSpotDAO, Mockito.times(1)).getNextAvailableSlot(any(ParkingType.class));
-        // vérifie que la méthode updateParking a été appelée une fois
         verify(parkingSpotDAO, Mockito.times(1)).updateParking(any(ParkingSpot.class));
-        // vérifie que la méthode getNbTicket a été appelée une fois
+        verify(ticketDAO, Mockito.times(1)).saveTicket(any(Ticket.class));
         verify(ticketDAO, Mockito.times(1)).getNbTicket(anyString());
     }
 
