@@ -46,7 +46,7 @@ public class ParkingDataBaseIT {
 
     @BeforeEach
     public void setUpPerTest() throws Exception {
-        
+
         // Mock : simule la plaque d'immatriculation 'ABCDEF'
         when(inputReaderUtil.readVehicleRegistrationNumber()).thenReturn("ABCDEF");
         // Création de l'objet ParkingService
@@ -111,7 +111,6 @@ public class ParkingDataBaseIT {
         // Vérification de Ticket
         Ticket ticketInDB = ticketDAO.getTicket("ABCDEF");
         assertNotNull(ticketInDB);
-        assertEquals(Fare.CAR_RATE_PER_HOUR, ticketInDB.getPrice());
         assertNotNull(ticketInDB.getInTime());
         assertNotNull(ticketInDB.getOutTime());
         assertEquals((Fare.CAR_RATE_PER_HOUR), ticketInDB.getPrice());
