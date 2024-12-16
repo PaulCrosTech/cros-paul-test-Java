@@ -80,6 +80,7 @@ public class ParkingDataBaseIT {
         assertNotNull(ticket.getInTime());
         assertNull(ticket.getOutTime());
         assertEquals(0, ticket.getPrice());
+        assertEquals(1, ticket.getParkingSpot().getId());
 
         // Vérification de ParkingSpot
         ParkingSpot parkingSpot = parkingSpotDAO.getParkingSpotById(ticket.getParkingSpot().getId());
@@ -113,7 +114,8 @@ public class ParkingDataBaseIT {
         assertNotNull(ticketInDB);
         assertNotNull(ticketInDB.getInTime());
         assertNotNull(ticketInDB.getOutTime());
-        assertEquals((Fare.CAR_RATE_PER_HOUR), ticketInDB.getPrice());
+        assertEquals(Fare.CAR_RATE_PER_HOUR, ticketInDB.getPrice());
+        assertEquals(1, ticket.getParkingSpot().getId());
 
         // Vérification de ParkingSpot
         ParkingSpot parkingSpotInDB = parkingSpotDAO.getParkingSpotById(ticket.getParkingSpot().getId());
@@ -163,6 +165,7 @@ public class ParkingDataBaseIT {
         assertNotNull(ticketInDB.getInTime());
         assertNotNull(ticketInDB.getOutTime());
         assertEquals((Fare.CAR_RATE_PER_HOUR * 0.95), ticketInDB.getPrice());
+        assertEquals(1, ticketInDB.getParkingSpot().getId());
 
         // Vérification de ParkingSpot
         ParkingSpot parkingSpotInDB = parkingSpotDAO.getParkingSpotById(ticketInDB.getParkingSpot().getId());

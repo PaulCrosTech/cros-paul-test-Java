@@ -32,6 +32,13 @@ public class ParkingService {
             ParkingSpot parkingSpot = getNextParkingNumberIfAvailable();
             if (parkingSpot != null && parkingSpot.getId() > 0) {
                 String vehicleRegNumber = getVehichleRegNumber();
+
+                // Etape #4 : Message de bienvenue pour les clients réguliers
+                int nbTicket = ticketDAO.getNbTicket(vehicleRegNumber);
+                if (nbTicket >= 1) {
+                    System.out.println("Heureux de vous revoir ! En tant qu’utilisateur régulier de notre parking, vous allez obtenir une remise de 5%");
+                }
+
                 parkingSpot.setAvailable(false);
                 parkingSpotDAO.updateParking(parkingSpot);
 
@@ -46,12 +53,6 @@ public class ParkingService {
                 System.out.println("Generated Ticket and saved in DB");
                 System.out.println("Please park your vehicle in spot number:" + parkingSpot.getId());
                 System.out.println("Recorded in-time for vehicle number:" + vehicleRegNumber + " is:" + inTime);
-
-                // Etape #4 : Message de bienvenue pour les clients réguliers
-                int nbTicket = ticketDAO.getNbTicket(vehicleRegNumber);
-                if (nbTicket > 1) {
-                    System.out.println("Heureux de vous revoir ! En tant qu’utilisateur régulier de notre parking, vous allez obtenir une remise de 5%");
-                }
             }
         } catch (Exception e) {
             logger.error("Unable to process incoming vehicle", e);
